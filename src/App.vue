@@ -1,20 +1,19 @@
 <template>
+  <AppHeader />
   <router-view />
-  <AppNavbar />
   <AppFooter />
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
-import AppNavbar from "./components/AppNavbar.vue";
-import AppFooter from "./components/AppFooter.vue";
+import AppFooter from "@/components/AppFooter.vue";
+import AppHeader from "@/components/AppHeader.vue";
 
 export default {
   name: "App",
   components: {
-    AppNavbar,
-    AppFooter
-  }
+    AppFooter,
+    AppHeader,
+  },
 };
 </script>
 
