@@ -67,101 +67,12 @@
           <!-- /Blog Posts Section -->
 
           <!-- Blog Pagination Section -->
-          <section id="blog-pagination" class="blog-pagination section">
-            <div class="container">
-              <div class="d-flex justify-content-center">
-                <ul>
-                  <li>
-                    <a
-                      href=""
-                      @click.prevent="changePage(pagination.current_page - 1)"
-                      :class="{ disabled: pagination.current_page == 1 }"
-                      ><i class="bi bi-chevron-left"></i
-                    ></a>
-                  </li>
-                  <li v-for="page in pagination.links" :key="page">
-                    <a
-                      href=""
-                      :class="{ active: page.active }"
-                      v-if="!isNaN(page.label)"
-                      @click.prevent="
-                        changePage((pagination.current_page = page.label))
-                      "
-                      >{{ page.label }}</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href=""
-                      @click.prevent="changePage(pagination.current_page + 1)"
-                      :class="{
-                        disabled:
-                          pagination.current_page == pagination.last_page,
-                      }"
-                      ><i class="bi bi-chevron-right"></i
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </section>
+          <AppPagination :pagination="pagination" @change-page="changePage" />
           <!-- /Blog Pagination Section -->
         </div>
 
         <div class="col-lg-4 sidebar">
-          <div class="widgets-container">
-            <!-- Recent Posts Widget -->
-            <div class="recent-posts-widget widget-item">
-              <h3 class="widget-title">Recent Posts</h3>
-
-              <div class="post-item">
-                <h4>
-                  <a href="blog-details.html"
-                    >Nihil blanditiis at in nihil autem</a
-                  >
-                </h4>
-                <time datetime="2020-01-01">Jan 1, 2020</time>
-              </div>
-              <!-- End recent post item-->
-
-              <div class="post-item">
-                <h4><a href="blog-details.html">Quidem autem et impedit</a></h4>
-                <time datetime="2020-01-01">Jan 1, 2020</time>
-              </div>
-              <!-- End recent post item-->
-
-              <div class="post-item">
-                <h4>
-                  <a href="blog-details.html"
-                    >Id quia et et ut maxime similique occaecati ut</a
-                  >
-                </h4>
-                <time datetime="2020-01-01">Jan 1, 2020</time>
-              </div>
-              <!-- End recent post item-->
-
-              <div class="post-item">
-                <h4>
-                  <a href="blog-details.html"
-                    >Laborum corporis quo dara net para</a
-                  >
-                </h4>
-                <time datetime="2020-01-01">Jan 1, 2020</time>
-              </div>
-              <!-- End recent post item-->
-
-              <div class="post-item">
-                <h4>
-                  <a href="blog-details.html"
-                    >Et dolores corrupti quae illo quod dolor</a
-                  >
-                </h4>
-                <time datetime="2020-01-01">Jan 1, 2020</time>
-              </div>
-              <!-- End recent post item-->
-            </div>
-            <!--/Recent Posts Widget -->
-          </div>
+          <AppRecentPost :recentPosts="recentPosts" @search="searchNews" />
         </div>
       </div>
     </div>
@@ -169,15 +80,20 @@
 </template>
 
 <script>
-import AppPageTitle from "@/components/AppPageTitle.vue";
 import axios from "axios";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
+
+import AppRecentPost from "@/components/AppRecentPost.vue";
+import AppPagination from "@/components/AppPagination.vue";
+import AppPageTitle from "@/components/AppPageTitle.vue";
 
 export default {
   name: "BeritaView",
   components: {
     AppPageTitle,
+    AppRecentPost,
+    AppPagination
   },
 
   data() {
@@ -190,10 +106,12 @@ export default {
         total: 0,
         links: [],
       },
+      recentPosts: [],
     };
   },
   mounted() {
     this.getNews();
+    this.getRecentPosts();
   },
   methods: {
     async getNews(page = 1) {
@@ -215,9 +133,41 @@ export default {
     formatDate(dateString) {
       return dayjs(dateString).locale("id").format("dddd, D MMMM YYYY");
     },
+
     changePage(page) {
       if (page > 0 && page <= this.pagination.last_page) {
         this.getNews(page);
+      }
+    },
+
+    async getRecentPosts() {
+      try {
+        const response = await axios.get("/recent_posts");
+        this.recentPosts = response.data;
+      } catch (error) {
+        console.error("Gagal mengambil postingan terbaru:", error.message);
+        this.recentPosts = [];
+      }
+    },
+
+    async searchNews(searchQuery) {
+      if (searchQuery.trim()) {
+        console.log(searchQuery);
+        try {
+          const response = await axios.get("/recent_posts", {
+            params: {
+              search: searchQuery.trim(), // Kirim query pencarian
+            },
+          });
+          this.recentPosts = response.data; // Update recentPosts dengan hasil pencarian
+          console.log("Hasil pencarian:", response.data);
+        } catch (error) {
+          console.error("Gagal melakukan pencarian berita:", error.message);
+          this.recentPosts = []; // Kosongkan jika gagal
+        }
+      } else {
+        // Jika input kosong, tampilkan kembali semua postingan terbaru
+        this.getRecentPosts();
       }
     },
   },

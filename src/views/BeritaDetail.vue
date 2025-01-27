@@ -62,150 +62,17 @@
           </section>
           <!-- /Blog Details Section -->
 
-          <!-- Blog Comments Section -->
-          <section id="blog-comments" class="blog-comments section">
-            <div class="container">
-              <h4 class="comments-count">{{ commentCount }} Komentar</h4>
-
-              <div
-                id="comment"
-                class="comment"
-                v-for="comment in comments"
-                :key="comment.id"
-              >
-                <div class="d-flex">
-                  <div class="comment-img">
-                    <img
-                      class="border rounded-circle"
-                      src="/assets/img/blog/comments-1.jpg"
-                      alt=""
-                    />
-                  </div>
-                  <div>
-                    <h5>
-                      <span class="p-1">{{ comment.author_name }}</span>
-                    </h5>
-                    <time datetime="{{ formatDate(comment.created_at) }}">
-                      {{ formatDate(comment.created_at) }}
-                    </time>
-                    <p>
-                      {{ comment.commentar }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <!-- End comment #1 -->
-            </div>
-          </section>
-          <!-- /Blog Comments Section -->
+          <!-- comment -->
+          <AppCommentary :comments="comments" />
+          <!-- comment end -->
 
           <!-- Comment Form Section -->
-          <section id="comment-form" class="comment-form section">
-            <div class="container">
-              <form action="" @submit.prevent="postComment">
-                <h4>Post Comment</h4>
-                <p>
-                  Your email address will not be published. Required fields are
-                  marked *
-                </p>
-                <div class="row">
-                  <div class="col-md-6 form-group">
-                    <input
-                      v-model="name"
-                      name="name"
-                      type="text"
-                      class="form-control"
-                      placeholder="Your Name*"
-                    />
-                  </div>
-                  <div class="col-md-6 form-group">
-                    <input
-                      v-model="email"
-                      name="email"
-                      type="text"
-                      class="form-control"
-                      placeholder="Your Email*"
-                    />
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col form-group">
-                    <textarea
-                      v-model="comment"
-                      name="comment"
-                      class="form-control"
-                      placeholder="Your Comment*"
-                    ></textarea>
-                  </div>
-                </div>
-
-                <div class="text-center">
-                  <button type="submit" class="btn btn-primary">
-                    {{ loading ? "Submitting..." : "Post Comment" }}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </section>
+          <!-- <AppCommentForm :loading="loading" @submit="postComment" /> -->
           <!-- /Comment Form Section -->
         </div>
 
         <div class="col-lg-4 sidebar">
-          <div class="widgets-container">
-            <!-- Search Widget -->
-            <div class="search-widget widget-item">
-              <h3 class="widget-title">Search</h3>
-              <form @submit.prevent="searchNews">
-                <input type="text" v-model="searchQuery" />
-                <button type="submit" title="Search">
-                  <i class="bi bi-search"></i>
-                </button>
-              </form>
-            </div>
-            <!--/Search Widget -->
-
-            <!-- Recent Posts Widget -->
-            <div class="recent-posts-widget widget-item">
-              <h3 class="widget-title">Recent Posts</h3>
-
-              <div class="post-item" v-for="post in recentPosts" :key="post.id">
-                <h4>
-                  <router-link
-                    :to="{
-                      name: 'berita_detail',
-                      params: { id: post.id },
-                    }"
-                  >
-                    {{ post.news_title }}
-                  </router-link>
-                </h4>
-                <time datetime="2020-01-01">{{
-                  formatDate(post.created_at)
-                }}</time>
-              </div>
-              <!-- End recent post item-->
-            </div>
-            <!--/Recent Posts Widget -->
-
-            <!-- Tags Widget -->
-            <div class="tags-widget widget-item">
-              <h3 class="widget-title">Tags</h3>
-              <ul>
-                <li><a href="#">App</a></li>
-                <li><a href="#">IT</a></li>
-                <li><a href="#">Business</a></li>
-                <li><a href="#">Mac</a></li>
-                <li><a href="#">Design</a></li>
-                <li><a href="#">Office</a></li>
-                <li><a href="#">Creative</a></li>
-                <li><a href="#">Studio</a></li>
-                <li><a href="#">Smart</a></li>
-                <li><a href="#">Tips</a></li>
-                <li><a href="#">Marketing</a></li>
-              </ul>
-            </div>
-            <!--/Tags Widget -->
-          </div>
+          <AppRecentPost :recentPosts="recentPosts" @search="searchNews" />
         </div>
       </div>
     </div>
@@ -217,10 +84,17 @@ import axios from "axios";
 import dayjs from "dayjs";
 import AppPageTitle from "@/components/AppPageTitle.vue";
 
+import AppCommentary from "@/components/AppCommentary.vue";
+// import AppCommentForm from "@/components/AppCommentForm.vue";
+import AppRecentPost from "@/components/AppRecentPost.vue";
+
 export default {
   name: "BeritaDetail",
   components: {
     AppPageTitle,
+    AppCommentary,
+    // AppCommentForm,
+    AppRecentPost
   },
   data() {
     return {
@@ -228,7 +102,6 @@ export default {
       comments: [], // List komentar
       commentCount: '', // Total komentar
       recentPosts: [], // Postingan terbaru atau hasil pencarian
-      searchQuery: "", // Input pencarian
     };
   },
   mounted() {
@@ -275,13 +148,13 @@ export default {
     },
 
     // Fungsi pencarian berita
-    async searchNews() {
-      if (this.searchQuery.trim()) {
-        console.log(this.searchQuery);
+    async searchNews(searchQuery) {
+      if (searchQuery.trim()) {
+        console.log(searchQuery);
         try {
           const response = await axios.get("/recent_posts", {
             params: {
-              search: this.searchQuery.trim(), // Kirim query pencarian
+              search: searchQuery.trim(), // Kirim query pencarian
             },
           });
           this.recentPosts = response.data; // Update recentPosts dengan hasil pencarian
