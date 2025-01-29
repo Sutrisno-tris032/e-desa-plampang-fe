@@ -52,7 +52,7 @@
 <script>
 export default {
   name: "AppCommentForm",
-  props: ["loading"],
+  // props: ["loading"],
   data() {
     return {
       name: "",

@@ -67,7 +67,7 @@
           <!-- comment end -->
 
           <!-- Comment Form Section -->
-          <!-- <AppCommentForm :loading="loading" @submit="postComment" /> -->
+          <AppCommentForm  @submit="postComment" />
           <!-- /Comment Form Section -->
         </div>
 
@@ -85,7 +85,7 @@ import dayjs from "dayjs";
 import AppPageTitle from "@/components/AppPageTitle.vue";
 
 import AppCommentary from "@/components/AppCommentary.vue";
-// import AppCommentForm from "@/components/AppCommentForm.vue";
+import AppCommentForm from "@/components/AppCommentForm.vue";
 import AppRecentPost from "@/components/AppRecentPost.vue";
 
 export default {
@@ -93,7 +93,7 @@ export default {
   components: {
     AppPageTitle,
     AppCommentary,
-    // AppCommentForm,
+    AppCommentForm,
     AppRecentPost
   },
   data() {
@@ -170,25 +170,27 @@ export default {
     },
 
     async postComment() {
-      try {
-        const response = await axios.post(`/comment`, {
-          news_id: this.$route.params.id,
-          comment: this.comment,
-          author_email: this.email,
-          author_name: this.name,
-        });
+      // console.log(submit.name, submit.email, submit.comment);
+      
+      // try {
+      //   const response = await axios.post(`/comment`, {
+      //     news_id: this.$route.params.id,
+      //     comment: comment,
+      //     author_email: email,
+      //     author_name: name,
+      //   });
 
-        if (response.data.success) {
-          alert(response.data.message); // Tampilkan pesan sukses
-          this.comments.push(response.data.data); // Tambahkan komentar baru ke daftar komentar
-          this.commentCount += 1;
-          this.clearForm();
-        }
-      } catch (error) {
-        console.error("Gagal mengirim komentar:", error);
-        alert(error.response?.data?.message || "Terjadi kesalahan!");
-        this.clearForm();
-      }
+      //   if (response.data.success) {
+      //     alert(response.data.message); // Tampilkan pesan sukses
+      //     this.comments.push(response.data.data); // Tambahkan komentar baru ke daftar komentar
+      //     this.commentCount += 1;
+      //     this.clearForm();
+      //   }
+      // } catch (error) {
+      //   console.error("Gagal mengirim komentar:", error);
+      //   alert(error.response?.data?.message || "Terjadi kesalahan!");
+      //   this.clearForm();
+      // }
     },
 
     // Format tanggal menggunakan dayjs
@@ -196,11 +198,11 @@ export default {
       return dayjs(dateString).locale("id").format("dddd, D MMMM YYYY");
     },
 
-    clearForm() {
-      this.comment = "";
-      this.email = "";
-      this.name = ""; 
-    }
+    // clearForm() {
+    //   this.comment = "";
+    //   this.email = "";
+    //   this.name = ""; 
+    // }
   },
 };
 </script>
