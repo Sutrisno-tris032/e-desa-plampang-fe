@@ -169,40 +169,34 @@ export default {
       }
     },
 
-    async postComment() {
-      // console.log(submit.name, submit.email, submit.comment);
+    async postComment(event) {
+      // console.log(event.name, event.email, event.comment);
       
-      // try {
-      //   const response = await axios.post(`/comment`, {
-      //     news_id: this.$route.params.id,
-      //     comment: comment,
-      //     author_email: email,
-      //     author_name: name,
-      //   });
+      try {
+        const response = await axios.post(`/comment`, {
+          news_id: this.$route.params.id,
+          comment: event.comment,
+          author_email: event.email,
+          author_name: event.name,
+        });
 
-      //   if (response.data.success) {
-      //     alert(response.data.message); // Tampilkan pesan sukses
-      //     this.comments.push(response.data.data); // Tambahkan komentar baru ke daftar komentar
-      //     this.commentCount += 1;
-      //     this.clearForm();
-      //   }
-      // } catch (error) {
-      //   console.error("Gagal mengirim komentar:", error);
-      //   alert(error.response?.data?.message || "Terjadi kesalahan!");
-      //   this.clearForm();
-      // }
+        if (response.data.success) {
+          alert(response.data.message); // Tampilkan pesan sukses
+          this.comments.push(response.data.data); // Tambahkan komentar baru ke daftar komentar
+          this.commentCount += 1;
+          // this.clearForm();
+        }
+      } catch (error) {
+        console.error("Gagal mengirim komentar:", error);
+        alert(error.response?.data?.message || "Terjadi kesalahan!");
+        // this.clearForm();
+      }
     },
 
     // Format tanggal menggunakan dayjs
     formatDate(dateString) {
       return dayjs(dateString).locale("id").format("dddd, D MMMM YYYY");
     },
-
-    // clearForm() {
-    //   this.comment = "";
-    //   this.email = "";
-    //   this.name = ""; 
-    // }
   },
 };
 </script>

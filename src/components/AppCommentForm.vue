@@ -2,7 +2,7 @@
   <!-- Comment Form Section -->
   <section id="comment-form" class="comment-form section">
     <div class="container">
-      <form action="" @submit.prevent="postComment">
+      <form>
         <h4>Post Comment</h4>
         <p>
           Your email address will not be published. Required fields are marked *
@@ -10,7 +10,7 @@
         <div class="row">
           <div class="col-md-6 form-group">
             <input
-              v-model="name"
+              v-model="payload.name"
               name="name"
               type="text"
               class="form-control"
@@ -19,7 +19,7 @@
           </div>
           <div class="col-md-6 form-group">
             <input
-              v-model="email"
+              v-model="payload.email"
               name="email"
               type="text"
               class="form-control"
@@ -30,7 +30,7 @@
         <div class="row">
           <div class="col form-group">
             <textarea
-              v-model="comment"
+              v-model="payload.comment"
               name="comment"
               class="form-control"
               placeholder="Your Comment*"
@@ -39,9 +39,7 @@
         </div>
 
         <div class="text-center">
-          <button type="submit" class="btn btn-primary">
-            {{ loading ? "Submitting..." : "Post Comment" }}
-          </button>
+          <button type="submit" class="btn btn-primary" @click="postComment">Post Comment</button>
         </div>
       </form>
     </div>
@@ -55,25 +53,25 @@ export default {
   // props: ["loading"],
   data() {
     return {
-      name: "",
-      email: "",
-      comment: "",
+      payload: { name: "", email: "", comment: "" },
     };
   },
 
   methods: {
-    postComment() {
-      this.$emit("submit", {
-        name: this.name,
-        email: this.email,
-        comment: this.comment,
-      });
+    async postComment() {
+      // console.log(this.payload);
+
+      this.$emit("submit", this.payload ); // this.postComment(this.name, this.email, this.comment); // this.postComment(this.name, this.email, this.comment);
       this.clearForm();
     },
+/**
+ * Resets the form fields by clearing the name, email, and comment inputs.
+ */
+
     clearForm() {
-      this.name = "";
-      this.email = "";
-      this.comment = "";
+      this.payload.name = "";
+      this.payload.email = "";
+      this.payload.comment = "";
     },
   },
 };
